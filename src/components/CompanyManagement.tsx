@@ -9,7 +9,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Building2, Plus, Edit, Trash2, ExternalLink } from "lucide-react";
+import { Building2, Plus, Edit, Trash2, ExternalLink, Briefcase } from "lucide-react";
 import { Link } from "react-router-dom";
 
 interface Company {
@@ -22,6 +22,7 @@ interface Company {
   size: string | null;
   website: string | null;
   created_at: string;
+  job_count?: number;
 }
 
 interface CompanyManagementProps {
@@ -51,13 +52,31 @@ export const CompanyManagement = ({ userId }: CompanyManagementProps) => {
   const fetchCompanies = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase
+      // First get companies
+      const { data: companiesData, error: companiesError } = await supabase
         .from("companies")
         .select("*")
         .order("created_at", { ascending: false });
 
-      if (error) throw error;
-      setCompanies(data || []);
+      if (companiesError) throw companiesError;
+      
+      // Get job counts for each company
+      const companiesWithJobCounts = await Promise.all(
+        (companiesData || []).map(async (company) => {
+          const { count } = await supabase
+            .from("jobs")
+            .select("*", { count: "exact", head: true })
+            .eq("company_id", company.id)
+            .eq("is_active", true);
+          
+          return {
+            ...company,
+            job_count: count || 0
+          };
+        })
+      );
+      
+      setCompanies(companiesWithJobCounts);
     } catch (error) {
       console.error("Error fetching companies:", error);
       toast({
@@ -414,6 +433,13 @@ export const CompanyManagement = ({ userId }: CompanyManagementProps) => {
                         View
                       </Link>
                     </Button>
+                    <div className="flex items-center space-x-2">
+                      {company.job_count !== undefined && (
+                        <Badge variant="outline" className="text-xs">
+                          <Briefcase className="h-3 w-3 mr-1" />
+                          {company.job_count} jobs
+                        </Badge>
+                      )}
                     {company.website && (
                       <Button variant="ghost" size="sm" asChild>
                         <a href={company.website} target="_blank" rel="noopener noreferrer">
@@ -421,7 +447,7 @@ export const CompanyManagement = ({ userId }: CompanyManagementProps) => {
                         </a>
                       </Button>
                     )}
-                  </div>
+                    </div>
                 </div>
               </CardContent>
             </Card>

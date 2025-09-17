@@ -198,7 +198,8 @@ export default function Jobs() {
         (job) =>
           job.title.toLowerCase().includes(query) ||
           job.companies.name.toLowerCase().includes(query) ||
-          job.description.toLowerCase().includes(query)
+          job.description.toLowerCase().includes(query) ||
+          job.skills_required?.some(skill => skill.toLowerCase().includes(query))
       );
     }
 
@@ -206,7 +207,8 @@ export default function Jobs() {
     if (filters.location.trim()) {
       const location = filters.location.toLowerCase();
       filtered = filtered.filter((job) =>
-        job.location.toLowerCase().includes(location)
+        job.location.toLowerCase().includes(location) ||
+        job.companies.location.toLowerCase().includes(location)
       );
     }
 
@@ -233,7 +235,7 @@ export default function Jobs() {
     if (filters.skills.length > 0) {
       filtered = filtered.filter((job) =>
         filters.skills.some((skill) =>
-          job.skills_required.some((jobSkill) =>
+          job.skills_required?.some((jobSkill) =>
             jobSkill.toLowerCase().includes(skill.toLowerCase())
           )
         )

@@ -35,8 +35,10 @@ export const Header = ({ user }: HeaderProps) => {
 
   const navItems = [
     { href: "/", label: "Home", icon: Briefcase },
-    { href: "/apply", label: "Apply for Job", icon: Search },
+    { href: "/apply", label: "Find Jobs", icon: Search },
     { href: "/hire", label: "Hire for Job", icon: Building2 },
+    { href: "/jobs", label: "Browse Jobs", icon: Briefcase },
+    { href: "/companies", label: "Companies", icon: Building2 },
     { href: "/contact", label: "Contact", icon: User },
   ];
 

@@ -126,7 +126,7 @@ export const JobCard = ({ job }: JobCardProps) => {
               View Details
             </Link>
           </Button>
-          <Button size="sm" asChild className="btn-gradient">
+          <Button size="sm" asChild className="btn-hero">
             <Link to={`/jobs/${job.id}`}>
               Apply Now
               <ExternalLink className="h-4 w-4 ml-2" />
