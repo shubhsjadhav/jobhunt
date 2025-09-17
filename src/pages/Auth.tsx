@@ -16,6 +16,7 @@ export default function Auth() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
+  const [userType, setUserType] = useState("seeker"); // seeker or recruiter
   const { user } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -50,8 +51,6 @@ export default function Auth() {
 
     try {
       const redirectUrl = `${window.location.origin}/`;
-      console.log('Attempting to sign up with:', { email, fullName, redirectUrl });
-      
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
@@ -59,25 +58,28 @@ export default function Auth() {
           emailRedirectTo: redirectUrl,
           data: {
             full_name: fullName,
+            user_type: userType,
           },
         },
       });
 
-      console.log('Sign up response:', { data, error });
+      if (error) throw error;
 
-      if (error) {
-        console.error('Sign up error:', error);
-        throw error;
+      // Save user type to profiles table (if using row-level security, this may need a trigger)
+      if (data?.user?.id) {
+        await supabase.from("profiles").upsert({
+          user_id: data.user.id,
+          full_name: fullName,
+          email,
+          user_type: userType,
+        });
       }
-
-      console.log('Sign up successful:', data);
 
       toast({
         title: "Account created successfully!",
         description: "Please check your email and click the verification link to activate your account.",
       });
     } catch (error: any) {
-      console.error('Sign up catch block:', error);
       toast({
         title: "Error creating account",
         description: error.message || 'An unexpected error occurred',
@@ -313,6 +315,27 @@ export default function Auth() {
                       required
                       minLength={6}
                     />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>User Type</Label>
+                    <div className="flex gap-4">
+                      <Button
+                        type="button"
+                        variant={userType === "seeker" ? "default" : "outline"}
+                        onClick={() => setUserType("seeker")}
+                        className={userType === "seeker" ? "font-bold" : ""}
+                      >
+                        I want a job
+                      </Button>
+                      <Button
+                        type="button"
+                        variant={userType === "recruiter" ? "default" : "outline"}
+                        onClick={() => setUserType("recruiter")}
+                        className={userType === "recruiter" ? "font-bold" : ""}
+                      >
+                        I want to hire
+                      </Button>
+                    </div>
                   </div>
                   <Button
                     type="submit"
