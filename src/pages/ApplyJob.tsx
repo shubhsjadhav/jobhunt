@@ -251,6 +251,8 @@ export default function ApplyJob() {
     if (min && max) return `$${(min / 1000).toFixed(0)}k - $${(max / 1000).toFixed(0)}k`;
     if (min) return `$${(min / 1000).toFixed(0)}k+`;
     return `Up to $${(max! / 1000).toFixed(0)}k`;
+    )
+  }
   };
 
   const getTimeAgo = (dateString: string) => {
@@ -261,8 +263,8 @@ export default function ApplyJob() {
     if (diffInDays === 0) return "Today";
     if (diffInDays === 1) return "Yesterday";
     if (diffInDays < 7) return `${diffInDays} days ago`;
-    if (diffInDays < 30) return `${Math.floor(diffInDays / 7)} weeks ago`;
-    return `${Math.floor(diffInDays / 30)} months ago`;
+    if (diffInDays < 30) return \`${Math.floor(diffInDays / 7)} weeks ago`;
+    return \`${Math.floor(diffInDays / 30)} months ago`;
   };
 
   const hasApplied = (jobId: string) => {
@@ -461,7 +463,7 @@ export default function ApplyJob() {
                         {job.companies.logo_url ? (
                           <img
                             src={job.companies.logo_url}
-                            alt={`${job.companies.name} logo`}
+                            alt={\`${job.companies.name} logo`}
                             className="w-12 h-12 rounded-lg object-cover"
                           />
                         ) : (
@@ -521,7 +523,7 @@ export default function ApplyJob() {
                         onClick={() => handleSaveJob(job.id)}
                         className={savedJobs.includes(job.id) ? "text-red-500" : ""}
                       >
-                        <Heart className={`h-4 w-4 ${savedJobs.includes(job.id) ? "fill-current" : ""}`} />
+                        <Heart className={\`h-4 w-4 ${savedJobs.includes(job.id) ? "fill-current" : ""}`} />
                       </Button>
                       <Button
                         variant="outline"
@@ -549,4 +551,5 @@ export default function ApplyJob() {
       </section>
     </div>
   );
+}
 }
