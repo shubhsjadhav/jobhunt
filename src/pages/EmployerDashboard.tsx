@@ -206,6 +206,8 @@ export default function EmployerDashboard() {
     if (min && max) return `$${(min / 1000).toFixed(0)}k - $${(max / 1000).toFixed(0)}k`;
     if (min) return `$${(min / 1000).toFixed(0)}k+`;
     return `Up to $${(max! / 1000).toFixed(0)}k`;
+    )
+  }
   };
 
   const getTimeAgo = (dateString: string) => {
@@ -216,8 +218,8 @@ export default function EmployerDashboard() {
     if (diffInDays === 0) return "Today";
     if (diffInDays === 1) return "Yesterday";
     if (diffInDays < 7) return `${diffInDays} days ago`;
-    if (diffInDays < 30) return `${Math.floor(diffInDays / 7)} weeks ago`;
-    return `${Math.floor(diffInDays / 30)} months ago`;
+    if (diffInDays < 30) return \`${Math.floor(diffInDays / 7)} weeks ago`;
+    return \`${Math.floor(diffInDays / 30)} months ago`;
   };
 
   const activeJobs = jobs.filter(job => job.status === "active");
@@ -355,7 +357,7 @@ export default function EmployerDashboard() {
                           {job.company_logo ? (
                             <img
                               src={job.company_logo}
-                              alt={`${job.company_name} logo`}
+                              alt={\`${job.company_name} logo`}
                               className="w-12 h-12 rounded-lg object-cover"
                             />
                           ) : (
@@ -580,4 +582,5 @@ export default function EmployerDashboard() {
       </main>
     </div>
   );
+}
 }

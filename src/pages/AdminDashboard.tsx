@@ -159,6 +159,8 @@ export default function AdminDashboard() {
     if (min && max) return `$${(min / 1000).toFixed(0)}k - $${(max / 1000).toFixed(0)}k`;
     if (min) return `$${(min / 1000).toFixed(0)}k+`;
     return `Up to $${(max! / 1000).toFixed(0)}k`;
+    )
+  }
   };
 
   const getTimeAgo = (dateString: string) => {
@@ -169,8 +171,8 @@ export default function AdminDashboard() {
     if (diffInDays === 0) return "Today";
     if (diffInDays === 1) return "Yesterday";
     if (diffInDays < 7) return `${diffInDays} days ago`;
-    if (diffInDays < 30) return `${Math.floor(diffInDays / 7)} weeks ago`;
-    return `${Math.floor(diffInDays / 30)} months ago`;
+    if (diffInDays < 30) return \`${Math.floor(diffInDays / 7)} weeks ago`;
+    return \`${Math.floor(diffInDays / 30)} months ago`;
   };
 
   if (!isAdmin) {
@@ -280,7 +282,7 @@ export default function AdminDashboard() {
                     {job.company_logo ? (
                       <img
                         src={job.company_logo}
-                        alt={`${job.company_name} logo`}
+                        alt={\`${job.company_name} logo`}
                         className="w-10 h-10 rounded-lg object-cover"
                       />
                     ) : (
@@ -339,4 +341,5 @@ export default function AdminDashboard() {
       </main>
     </div>
   );
+}
 }
