@@ -57,10 +57,7 @@ export default function JobDetail() {
   
   const [job, setJob] = useState<Job | null>(null);
   const [loading, setLoading] = useState(true);
-  const [applying, setApplying] = useState(false);
   const [hasApplied, setHasApplied] = useState(false);
-  const [coverLetter, setCoverLetter] = useState("");
-  const [showApplicationDialog, setShowApplicationDialog] = useState(false);
 
   useEffect(() => {
     if (id) {
@@ -68,6 +65,8 @@ export default function JobDetail() {
       if (user) {
         checkApplicationStatus();
       }
+      // Track job view
+      trackJobView();
     }
   }, [id, user]);
 
@@ -107,7 +106,7 @@ export default function JobDetail() {
 
     try {
       const { data, error } = await supabase
-        .from("applications")
+        .from("job_applications")
         .select("id")
         .eq("job_id", id)
         .eq("user_id", user.id)
@@ -121,41 +120,17 @@ export default function JobDetail() {
     }
   };
 
-  const handleApply = async () => {
-    if (!user) {
-      navigate("/auth");
-      return;
-    }
-
-    setApplying(true);
+  const trackJobView = async () => {
     try {
-      const { error } = await supabase
-        .from("applications")
-        .insert({
+      if (id) {
+        await supabase.rpc('increment_job_views', {
           job_id: id,
-          user_id: user.id,
-          cover_letter: coverLetter.trim() || null,
-          status: "pending",
+          user_ip: null,
+          user_agent_string: navigator.userAgent
         });
-
-      if (error) throw error;
-
-      setHasApplied(true);
-      setShowApplicationDialog(false);
-      setCoverLetter("");
-      
-      toast({
-        title: "Application submitted!",
-        description: "Your application has been sent to the employer.",
-      });
+      }
     } catch (error: any) {
-      toast({
-        title: "Error submitting application",
-        description: error.message,
-        variant: "destructive",
-      });
-    } finally {
-      setApplying(false);
+      console.error("Error tracking job view:", error);
     }
   };
 
@@ -328,49 +303,11 @@ export default function JobDetail() {
                     Already Applied
                   </Button>
                 ) : (
-                  <Dialog open={showApplicationDialog} onOpenChange={setShowApplicationDialog}>
-                    <DialogTrigger asChild>
-                      <Button className="w-full" variant="hero" size="lg">
-                        Apply for this Job
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent>
-                      <DialogHeader>
-                        <DialogTitle>Apply for {job.title}</DialogTitle>
-                        <DialogDescription>
-                          Submit your application to {job.companies.name}
-                        </DialogDescription>
-                      </DialogHeader>
-                      <div className="space-y-4">
-                        <div>
-                          <Label htmlFor="cover-letter">Cover Letter (Optional)</Label>
-                          <Textarea
-                            id="cover-letter"
-                            placeholder="Tell the employer why you're a great fit for this role..."
-                            value={coverLetter}
-                            onChange={(e) => setCoverLetter(e.target.value)}
-                            rows={5}
-                          />
-                        </div>
-                        <div className="flex space-x-2">
-                          <Button
-                            onClick={handleApply}
-                            disabled={applying}
-                            className="flex-1"
-                            variant="hero"
-                          >
-                            {applying ? "Submitting..." : "Submit Application"}
-                          </Button>
-                          <Button
-                            variant="outline"
-                            onClick={() => setShowApplicationDialog(false)}
-                          >
-                            Cancel
-                          </Button>
-                        </div>
-                      </div>
-                    </DialogContent>
-                  </Dialog>
+                  <Button className="w-full" variant="hero" size="lg" asChild>
+                    <Link to={`/jobs/${id}/apply`}>
+                      Apply for this Job
+                    </Link>
+                  </Button>
                 )}
               </CardContent>
             </Card>

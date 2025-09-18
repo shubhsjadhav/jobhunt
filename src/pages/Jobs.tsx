@@ -1,14 +1,17 @@
 import { useState, useEffect } from "react";
-import { SearchFilters, SearchFilters as SearchFiltersType } from "@/components/SearchFilters";
-import { JobCard } from "@/components/JobCard";
+import { EnhancedSearchFilters, SearchFilters as SearchFiltersType } from "@/components/EnhancedSearchFilters";
+import { EnhancedJobCard } from "@/components/EnhancedJobCard";
 import { Header } from "@/components/Header";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2 } from "lucide-react";
+import { Loader2, TrendingUp } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface Job {
   id: string;
   title: string;
+  company_name: string;
+  company_logo?: string;
   description: string;
   location: string;
   employment_type: string;
@@ -17,13 +20,9 @@ interface Job {
   salary_max?: number;
   skills_required: string[];
   is_remote: boolean;
+  is_featured: boolean;
+  view_count?: number;
   created_at: string;
-  companies: {
-    id: string;
-    name: string;
-    logo_url?: string;
-    location: string;
-  };
 }
 
 export default function Jobs() {
@@ -37,8 +36,13 @@ export default function Jobs() {
     employmentType: "",
     experienceLevel: "",
     isRemote: null,
+    salaryMin: 0,
+    salaryMax: 200000,
     skills: [],
   });
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalJobs, setTotalJobs] = useState(0);
+  const jobsPerPage = 12;
 
   useEffect(() => {
     fetchJobs();
@@ -46,147 +50,83 @@ export default function Jobs() {
 
   useEffect(() => {
     applyFilters();
-  }, [jobs, filters]);
+  }, [jobs, filters, currentPage]);
 
   const fetchJobs = async () => {
     try {
       setLoading(true);
       console.log("Fetching jobs...");
       
-      // First, let's add some sample data if none exists
-      const { data: existingJobs } = await supabase
-        .from("jobs")
-        .select("id")
-        .limit(1);
-      
-      if (!existingJobs || existingJobs.length === 0) {
-        console.log("No jobs found, adding sample data...");
-        await addSampleJobs();
-      }
-      
-      const { data, error } = await supabase
-        .from("jobs")
-        .select(`
-          *,
-          companies (
-            id,
-            name,
-            logo_url,
-            location
-          )
-        `)
-        .eq("is_active", true)
-        .order("created_at", { ascending: false });
+      // Use the search function for better performance and ranking
+      const { data, error } = await supabase.rpc('search_jobs', {
+        search_query: null,
+        location_filter: null,
+        employment_type_filter: null,
+        experience_level_filter: null,
+        salary_min_filter: null,
+        salary_max_filter: null,
+        is_remote_filter: null,
+        limit_count: 100,
+        offset_count: 0
+      });
 
       if (error) throw error;
       console.log("Jobs data:", data);
       setJobs(data || []);
+      setTotalJobs(data?.length || 0);
     } catch (error) {
       console.error("Error fetching jobs:", error);
+      // Fallback to regular query if RPC fails
+      try {
+        const { data, error } = await supabase
+          .from("jobs")
+          .select("*")
+          .eq("is_active", true)
+          .eq("status", "active")
+          .order("is_featured", { ascending: false })
+          .order("created_at", { ascending: false });
+
+        if (error) throw error;
+        setJobs(data || []);
+        setTotalJobs(data?.length || 0);
+      } catch (fallbackError) {
+        console.error("Fallback query also failed:", fallbackError);
+      }
     } finally {
       setLoading(false);
     }
   };
 
-  const addSampleJobs = async () => {
+  const searchJobs = async (searchFilters: SearchFiltersType) => {
     try {
-      // First get companies to link jobs to them
-      const { data: companies } = await supabase
-        .from("companies")
-        .select("id, name")
-        .limit(5);
+      setLoading(true);
       
-      if (!companies || companies.length === 0) {
-        console.log("No companies found, cannot add jobs");
-        return;
-      }
+      const { data, error } = await supabase.rpc('search_jobs', {
+        search_query: searchFilters.query || null,
+        location_filter: searchFilters.location || null,
+        employment_type_filter: searchFilters.employmentType || null,
+        experience_level_filter: searchFilters.experienceLevel || null,
+        salary_min_filter: searchFilters.salaryMin > 0 ? searchFilters.salaryMin : null,
+        salary_max_filter: searchFilters.salaryMax < 200000 ? searchFilters.salaryMax : null,
+        is_remote_filter: searchFilters.isRemote,
+        limit_count: jobsPerPage,
+        offset_count: (currentPage - 1) * jobsPerPage
+      });
 
-      const { error } = await supabase
-        .from("jobs")
-        .insert([
-          {
-            company_id: companies[0].id,
-            title: "Senior Frontend Developer",
-            description: "Join our dynamic team to build cutting-edge web applications using modern technologies. You will work on challenging projects that impact millions of users worldwide.",
-            requirements: ["5+ years React experience", "TypeScript proficiency", "Modern CSS frameworks", "Git version control"],
-            benefits: ["Health insurance", "Remote work options", "401k matching", "Professional development budget"],
-            salary_min: 90000,
-            salary_max: 130000,
-            location: "San Francisco, CA",
-            employment_type: "full-time",
-            experience_level: "senior",
-            skills_required: ["React", "TypeScript", "CSS", "JavaScript"],
-            is_remote: true,
-            is_active: true
-          },
-          {
-            company_id: companies[1]?.id || companies[0].id,
-            title: "Marketing Manager",
-            description: "Lead our marketing initiatives to promote sustainable energy solutions. Drive campaigns that make a real environmental impact.",
-            requirements: ["3+ years marketing experience", "Digital marketing expertise", "Campaign management", "Analytics tools"],
-            benefits: ["Health insurance", "Flexible hours", "Stock options", "Green commute benefits"],
-            salary_min: 65000,
-            salary_max: 85000,
-            location: "Austin, TX",
-            employment_type: "full-time",
-            experience_level: "mid-level",
-            skills_required: ["Marketing", "Digital Marketing", "Analytics"],
-            is_remote: false,
-            is_active: true
-          },
-          {
-            company_id: companies[2]?.id || companies[0].id,
-            title: "Data Scientist",
-            description: "Analyze financial data to drive investment decisions and risk assessment. Work with large datasets and cutting-edge ML models.",
-            requirements: ["Masters in Data Science or related field", "Python/R proficiency", "Machine learning experience", "Financial domain knowledge"],
-            benefits: ["Competitive salary", "Bonus structure", "Health insurance", "Learning stipend"],
-            salary_min: 100000,
-            salary_max: 150000,
-            location: "New York, NY",
-            employment_type: "full-time",
-            experience_level: "senior",
-            skills_required: ["Python", "Machine Learning", "SQL", "Statistics"],
-            is_remote: false,
-            is_active: true
-          },
-          {
-            company_id: companies[3]?.id || companies[0].id,
-            title: "UX Designer",
-            description: "Design intuitive healthcare applications that improve patient outcomes. Collaborate with medical professionals and developers.",
-            requirements: ["3+ years UX design experience", "Healthcare domain knowledge preferred", "Figma/Sketch proficiency", "User research skills"],
-            benefits: ["Health insurance", "Remote work", "Design conference budget", "Wellness programs"],
-            salary_min: 70000,
-            salary_max: 95000,
-            location: "Boston, MA",
-            employment_type: "full-time",
-            experience_level: "mid-level",
-            skills_required: ["UX Design", "Figma", "User Research"],
-            is_remote: true,
-            is_active: true
-          },
-          {
-            company_id: companies[4]?.id || companies[0].id,
-            title: "Junior Backend Developer",
-            description: "Start your career building scalable backend systems for data processing and analytics platforms.",
-            requirements: ["Computer Science degree or bootcamp", "Basic programming skills", "Database knowledge", "Eagerness to learn"],
-            benefits: ["Mentorship program", "Health insurance", "Flexible hours", "Learning budget"],
-            salary_min: 55000,
-            salary_max: 75000,
-            location: "Seattle, WA",
-            employment_type: "full-time",
-            experience_level: "entry",
-            skills_required: ["Python", "SQL", "APIs"],
-            is_remote: false,
-            is_active: true
-          }
-        ]);
-      
       if (error) throw error;
-      console.log("Sample jobs added successfully");
+      setFilteredJobs(data || []);
+      setTotalJobs(data?.length || 0);
     } catch (error) {
-      console.error("Error adding sample jobs:", error);
+      console.error("Error searching jobs:", error);
+      // Fallback to client-side filtering
+      applyFilters();
+    } finally {
+      setLoading(false);
     }
   };
+        .eq("is_active", true)
+        .order("created_at", { ascending: false });
+
 
   const applyFilters = () => {
     let filtered = [...jobs];
@@ -197,7 +137,7 @@ export default function Jobs() {
       filtered = filtered.filter(
         (job) =>
           job.title.toLowerCase().includes(query) ||
-          job.companies.name.toLowerCase().includes(query) ||
+          job.company_name.toLowerCase().includes(query) ||
           job.description.toLowerCase().includes(query)
       );
     }
@@ -229,6 +169,19 @@ export default function Jobs() {
       filtered = filtered.filter((job) => job.is_remote === filters.isRemote);
     }
 
+    // Salary filter
+    if (filters.salaryMin > 0) {
+      filtered = filtered.filter((job) => 
+        job.salary_max ? job.salary_max >= filters.salaryMin : true
+      );
+    }
+    
+    if (filters.salaryMax < 200000) {
+      filtered = filtered.filter((job) => 
+        job.salary_min ? job.salary_min <= filters.salaryMax : true
+      );
+    }
+
     // Skills filter
     if (filters.skills.length > 0) {
       filtered = filtered.filter((job) =>
@@ -245,6 +198,17 @@ export default function Jobs() {
 
   const handleFiltersChange = (newFilters: SearchFiltersType) => {
     setFilters(newFilters);
+    setCurrentPage(1);
+    
+    // Use server-side search if available
+    if (newFilters.query || newFilters.location || newFilters.employmentType || 
+        newFilters.experienceLevel || newFilters.isRemote !== null ||
+        newFilters.salaryMin > 0 || newFilters.salaryMax < 200000 ||
+        newFilters.skills.length > 0) {
+      searchJobs(newFilters);
+    } else {
+      applyFilters();
+    }
   };
 
   if (loading) {
@@ -272,45 +236,58 @@ export default function Jobs() {
             Find Your Dream Job
           </h1>
           <p className="text-muted-foreground">
-            Discover {jobs.length} job opportunities from top companies
+            Discover {totalJobs} job opportunities from top companies
           </p>
         </div>
 
-        <SearchFilters
+        <EnhancedSearchFilters
           onFiltersChange={handleFiltersChange}
           className="mb-8"
         />
 
         <div className="mb-6 flex items-center justify-between">
           <p className="text-muted-foreground">
-            Showing {filteredJobs.length} of {jobs.length} jobs
+            Showing {filteredJobs.length} of {totalJobs} jobs
           </p>
+          <div className="flex items-center space-x-2">
+            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+            <span className="text-sm text-muted-foreground">Sorted by relevance</span>
+          </div>
         </div>
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {filteredJobs.map((job) => (
-            <JobCard
+            <EnhancedJobCard
               key={job.id}
-              job={{
-                id: job.id,
-                title: job.title,
-                company: {
-                  name: job.companies.name,
-                  logo_url: job.companies.logo_url,
-                  location: job.companies.location,
-                },
-                location: job.location,
-                employment_type: job.employment_type,
-                experience_level: job.experience_level,
-                salary_min: job.salary_min,
-                salary_max: job.salary_max,
-                skills_required: job.skills_required,
-                is_remote: job.is_remote,
-                created_at: job.created_at,
-              }}
+              job={job}
             />
           ))}
         </div>
+
+        {/* Pagination */}
+        {totalJobs > jobsPerPage && (
+          <div className="flex justify-center mt-8">
+            <div className="flex space-x-2">
+              <Button
+                variant="outline"
+                onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                disabled={currentPage === 1}
+              >
+                Previous
+              </Button>
+              <span className="flex items-center px-4 text-sm text-muted-foreground">
+                Page {currentPage} of {Math.ceil(totalJobs / jobsPerPage)}
+              </span>
+              <Button
+                variant="outline"
+                onClick={() => setCurrentPage(prev => prev + 1)}
+                disabled={currentPage >= Math.ceil(totalJobs / jobsPerPage)}
+              >
+                Next
+              </Button>
+            </div>
+          </div>
+        )}
 
         {filteredJobs.length === 0 && (
           <div className="text-center py-12">
