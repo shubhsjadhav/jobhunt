@@ -1,14 +1,13 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Header } from "@/components/Header";
-import { CompanyManagement } from "@/components/CompanyManagement";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
-import { User, Briefcase, Clock, CheckCircle, Building2 } from "lucide-react";
+import { User, Briefcase, Clock, CheckCircle } from "lucide-react";
 
 interface Application {
   id: string;
@@ -164,7 +163,6 @@ export default function Dashboard() {
           <TabsList>
             <TabsTrigger value="applications">My Applications</TabsTrigger>
             <TabsTrigger value="profile">Profile</TabsTrigger>
-            <TabsTrigger value="companies">Companies</TabsTrigger>
           </TabsList>
 
           <TabsContent value="applications" className="space-y-6">
@@ -276,10 +274,6 @@ export default function Dashboard() {
                 </Button>
               </CardContent>
             </Card>
-          </TabsContent>
-
-          <TabsContent value="companies" className="space-y-6">
-            <CompanyManagement userId={user?.id || ""} />
           </TabsContent>
         </Tabs>
       </main>

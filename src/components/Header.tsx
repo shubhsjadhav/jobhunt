@@ -35,13 +35,18 @@ export const Header = ({ user }: HeaderProps) => {
 
   const navItems = [
     { href: "/", label: "Home", icon: Briefcase },
-    { href: "/apply", label: "Apply for Job", icon: Search },
-    { href: "/hire", label: "Hire for Job", icon: Building2 },
+    { href: "/jobs", label: "Find Jobs", icon: Search },
+    { href: "/companies", label: "Companies", icon: Building2 },
     { href: "/contact", label: "Contact", icon: User },
   ];
 
   if (user) {
     navItems.push({ href: "/dashboard", label: "Dashboard", icon: User });
+    
+    // Add admin link for admin user
+    if (user.email === "shubhz12@gmail.com") {
+      navItems.push({ href: "/admin", label: "Admin", icon: Building2 });
+    }
   }
 
   return (

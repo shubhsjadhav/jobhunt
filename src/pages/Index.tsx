@@ -452,7 +452,7 @@ const Index = () => {
                 <Button size="lg" asChild className="btn-hero px-8 py-6 text-lg">
                   <Link to="/auth">
                     <Star className="mr-3 h-6 w-6" />
-                    Get Started Free
+                    Find Jobs Now
                     <ArrowRight className="ml-3 h-6 w-6" />
                   </Link>
                 </Button>
@@ -461,15 +461,6 @@ const Index = () => {
                     <Search className="mr-3 h-5 w-5" />
                     Browse Jobs
                   </Link>
-                </Button>
-                <Button 
-                  variant="secondary" 
-                  size="lg" 
-                  onClick={handleAddSampleData}
-                  disabled={isAddingData}
-                  className="px-8 py-6 text-lg"
-                >
-                  {isAddingData ? "Adding Data..." : "Add Sample Data"}
                 </Button>
               </div>
 
@@ -481,11 +472,11 @@ const Index = () => {
                   </div>
                   <div className="space-y-2">
                     <div className="text-3xl font-bold text-gradient">24/7</div>
-                    <div className="text-sm text-muted-foreground">Job matching</div>
+                    <div className="text-sm text-muted-foreground">Job search</div>
                   </div>
                   <div className="space-y-2">
                     <div className="text-3xl font-bold text-gradient">5 min</div>
-                    <div className="text-sm text-muted-foreground">Setup time</div>
+                    <div className="text-sm text-muted-foreground">Apply time</div>
                   </div>
                 </div>
               </div>
@@ -494,7 +485,18 @@ const Index = () => {
         </div>
       </section>
       
-      <DebugPanel />
+      {/* Debug Panel - Only show for admin */}
+      {user?.email === "shubhz12@gmail.com" && (
+        <div className="fixed bottom-4 right-4">
+          <Button 
+            variant="secondary" 
+            onClick={handleAddSampleData}
+            disabled={isAddingData}
+          >
+            {isAddingData ? "Adding Data..." : "Add Sample Data"}
+          </Button>
+        </div>
+      )}
     </div>
   );
 };

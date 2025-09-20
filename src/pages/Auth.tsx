@@ -8,7 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { Search, ArrowLeft, Loader2 } from "lucide-react";
+import { Search, ArrowLeft, Loader2, Shield } from "lucide-react";
 
 export default function Auth() {
   const [loading, setLoading] = useState(false);
@@ -16,33 +16,25 @@ export default function Auth() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
-  const [userType, setUserType] = useState("seeker"); // seeker or recruiter
+  const [loginType, setLoginType] = useState("seeker"); // seeker or admin
   const { user } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  // Redirect if already authenticated and test Supabase connection
+  // Admin credentials
+  const ADMIN_EMAIL = "shubhz12@gmail.com";
+  const ADMIN_PASSWORD = "shubh1214";
+
+  // Redirect if already authenticated
   useEffect(() => {
     if (user) {
-      navigate("/");
-    }
-
-    // Test Supabase connection on component mount
-    const testConnection = async () => {
-      try {
-        console.log('Testing Supabase connection...');
-        const { data, error } = await supabase.from('companies').select('count').limit(1);
-        if (error) {
-          console.error('Supabase connection test failed:', error);
-        } else {
-          console.log('Supabase connection test successful:', data);
-        }
-      } catch (err) {
-        console.error('Supabase connection test error:', err);
+      // Check if user is admin
+      if (user.email === ADMIN_EMAIL) {
+        navigate("/admin");
+      } else {
+        navigate("/");
       }
-    };
-
-    testConnection();
+    }
   }, [user, navigate]);
 
   const handleSignUp = async (e: React.FormEvent) => {
@@ -58,20 +50,19 @@ export default function Auth() {
           emailRedirectTo: redirectUrl,
           data: {
             full_name: fullName,
-            user_type: userType,
+            user_type: "seeker", // Only job seekers can sign up
           },
         },
       });
 
       if (error) throw error;
 
-      // Save user type to profiles table (if using row-level security, this may need a trigger)
+      // Save user profile
       if (data?.user?.id) {
         await supabase.from("profiles").upsert({
           user_id: data.user.id,
           full_name: fullName,
           email,
-          user_type: userType,
         });
       }
 
@@ -95,14 +86,19 @@ export default function Auth() {
     setLoading(true);
 
     try {
-      console.log('Attempting to sign in with:', { email });
+      console.log('Attempting to sign in with:', { email, loginType });
       
+      // Check if trying to login as admin
+      if (loginType === "admin") {
+        if (email !== ADMIN_EMAIL || password !== ADMIN_PASSWORD) {
+          throw new Error("Invalid admin credentials");
+        }
+      }
+
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
-
-      console.log('Sign in response:', { data, error });
 
       if (error) {
         console.error('Sign in error:', error);
@@ -115,23 +111,28 @@ export default function Auth() {
         title: "Welcome back!",
         description: "You have successfully signed in.",
       });
-      navigate("/");
+
+      // Redirect based on user type
+      if (email === ADMIN_EMAIL) {
+        navigate("/admin");
+      } else {
+        navigate("/");
+      }
     } catch (error: any) {
       console.error('Sign in catch block:', error);
       
-      // Handle specific error cases
       let errorTitle = "Error signing in";
       let errorDescription = error.message || 'An unexpected error occurred';
       
-      if (error.message?.includes('email not confirm') || error.message?.includes('Email not confirmed')) {
+      if (error.message?.includes('Invalid admin credentials')) {
+        errorTitle = "Invalid Admin Credentials";
+        errorDescription = "Please check your admin email and password.";
+      } else if (error.message?.includes('email not confirm') || error.message?.includes('Email not confirmed')) {
         errorTitle = "Email Not Verified";
         errorDescription = "Please check your email and click the verification link before signing in.";
       } else if (error.message?.includes('Invalid login credentials')) {
         errorTitle = "Invalid Credentials";
         errorDescription = "Please check your email and password and try again.";
-      } else if (error.message?.includes('User not found')) {
-        errorTitle = "Account Not Found";
-        errorDescription = "No account found with this email. Please sign up first.";
       }
       
       toast({
@@ -156,8 +157,6 @@ export default function Auth() {
 
     setResendingEmail(true);
     try {
-      console.log('Resending verification email to:', email);
-      
       const { error } = await supabase.auth.resend({
         type: 'signup',
         email: email,
@@ -166,19 +165,13 @@ export default function Auth() {
         }
       });
 
-      if (error) {
-        console.error('Resend verification error:', error);
-        throw error;
-      }
-
-      console.log('Verification email sent successfully');
+      if (error) throw error;
       
       toast({
         title: "Verification Email Sent",
         description: "Please check your email and click the verification link.",
       });
     } catch (error: any) {
-      console.error('Resend verification catch block:', error);
       toast({
         title: "Error Sending Email",
         description: error.message || 'Failed to resend verification email',
@@ -207,7 +200,7 @@ export default function Auth() {
             </div>
             <CardTitle className="font-heading text-2xl">Welcome to Job Hunt</CardTitle>
             <CardDescription>
-              Join thousands of job seekers finding their dream careers
+              Find your dream job or manage the platform
             </CardDescription>
           </CardHeader>
           
@@ -220,12 +213,37 @@ export default function Auth() {
               
               <TabsContent value="signin">
                 <form onSubmit={handleSignIn} className="space-y-4">
+                  {/* Login Type Selection */}
+                  <div className="space-y-2">
+                    <Label>Login As</Label>
+                    <div className="flex gap-2">
+                      <Button
+                        type="button"
+                        variant={loginType === "seeker" ? "default" : "outline"}
+                        onClick={() => setLoginType("seeker")}
+                        className="flex-1"
+                      >
+                        <Search className="h-4 w-4 mr-2" />
+                        Job Seeker
+                      </Button>
+                      <Button
+                        type="button"
+                        variant={loginType === "admin" ? "default" : "outline"}
+                        onClick={() => setLoginType("admin")}
+                        className="flex-1"
+                      >
+                        <Shield className="h-4 w-4 mr-2" />
+                        Admin
+                      </Button>
+                    </div>
+                  </div>
+
                   <div className="space-y-2">
                     <Label htmlFor="email">Email</Label>
                     <Input
                       id="email"
                       type="email"
-                      placeholder="Enter your email"
+                      placeholder={loginType === "admin" ? "Admin email" : "Enter your email"}
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       required
@@ -236,7 +254,7 @@ export default function Auth() {
                     <Input
                       id="password"
                       type="password"
-                      placeholder="Enter your password"
+                      placeholder={loginType === "admin" ? "Admin password" : "Enter your password"}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       required
@@ -254,33 +272,40 @@ export default function Auth() {
                         Signing In...
                       </>
                     ) : (
-                      "Sign In"
+                      `Sign In as ${loginType === "admin" ? "Admin" : "Job Seeker"}`
                     )}
                   </Button>
                   
-                  <div className="text-center mt-4">
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      onClick={handleResendVerification}
-                      disabled={resendingEmail || !email}
-                      className="text-sm text-muted-foreground hover:text-foreground"
-                    >
-                      {resendingEmail ? (
-                        <>
-                          <Loader2 className="mr-2 h-3 w-3 animate-spin" />
-                          Sending...
-                        </>
-                      ) : (
-                        "Resend Verification Email"
-                      )}
-                    </Button>
-                  </div>
+                  {loginType === "seeker" && (
+                    <div className="text-center mt-4">
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={handleResendVerification}
+                        disabled={resendingEmail || !email}
+                        className="text-sm text-muted-foreground hover:text-foreground"
+                      >
+                        {resendingEmail ? (
+                          <>
+                            <Loader2 className="mr-2 h-3 w-3 animate-spin" />
+                            Sending...
+                          </>
+                        ) : (
+                          "Resend Verification Email"
+                        )}
+                      </Button>
+                    </div>
+                  )}
                 </form>
               </TabsContent>
               
               <TabsContent value="signup">
+                <div className="text-center mb-4">
+                  <p className="text-sm text-muted-foreground">
+                    Sign up as a job seeker to find your dream job
+                  </p>
+                </div>
                 <form onSubmit={handleSignUp} className="space-y-4">
                   <div className="space-y-2">
                     <Label htmlFor="fullName">Full Name</Label>
@@ -316,27 +341,6 @@ export default function Auth() {
                       minLength={6}
                     />
                   </div>
-                  <div className="space-y-2">
-                    <Label>User Type</Label>
-                    <div className="flex gap-4">
-                      <Button
-                        type="button"
-                        variant={userType === "seeker" ? "default" : "outline"}
-                        onClick={() => setUserType("seeker")}
-                        className={userType === "seeker" ? "font-bold" : ""}
-                      >
-                        I want a job
-                      </Button>
-                      <Button
-                        type="button"
-                        variant={userType === "recruiter" ? "default" : "outline"}
-                        onClick={() => setUserType("recruiter")}
-                        className={userType === "recruiter" ? "font-bold" : ""}
-                      >
-                        I want to hire
-                      </Button>
-                    </div>
-                  </div>
                   <Button
                     type="submit"
                     className="w-full"
@@ -349,7 +353,7 @@ export default function Auth() {
                         Creating Account...
                       </>
                     ) : (
-                      "Create Account"
+                      "Create Job Seeker Account"
                     )}
                   </Button>
                 </form>
