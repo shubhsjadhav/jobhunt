@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { NotificationCenter } from "@/components/NotificationCenter";
 import { Search, MapPin, User, LogOut, Briefcase, Building2, Menu, X } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -82,6 +83,7 @@ export const Header = ({ user }: HeaderProps) => {
         <div className="hidden md:flex items-center space-x-3">
           {user ? (
             <div className="flex items-center space-x-3">
+              <NotificationCenter userId={user.id} />
               <Button variant="ghost" size="sm" asChild className="hover:bg-accent/50">
                 <Link to="/dashboard" className="flex items-center space-x-2">
                   <User className="h-4 w-4" />

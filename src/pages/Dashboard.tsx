@@ -1,6 +1,10 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Header } from "@/components/Header";
+import { ProfileForm } from "@/components/ProfileForm";
+import { ApplicationTracker } from "@/components/ApplicationTracker";
+import { JobRecommendations } from "@/components/JobRecommendations";
+import { SavedJobs } from "@/components/SavedJobs";
 import { CompanyManagement } from "@/components/CompanyManagement";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
@@ -162,70 +166,31 @@ export default function Dashboard() {
 
         <Tabs defaultValue="applications" className="space-y-6">
           <TabsList>
-            <TabsTrigger value="applications">My Applications</TabsTrigger>
+            <TabsTrigger value="applications">Applications</TabsTrigger>
+            <TabsTrigger value="recommendations">Recommendations</TabsTrigger>
+            <TabsTrigger value="saved">Saved Jobs</TabsTrigger>
             <TabsTrigger value="profile">Profile</TabsTrigger>
             <TabsTrigger value="companies">Companies</TabsTrigger>
           </TabsList>
 
           <TabsContent value="applications" className="space-y-6">
-            {applications.length === 0 ? (
-              <Card>
-                <CardContent className="text-center py-12">
-                  <Briefcase className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                  <h3 className="text-lg font-semibold text-foreground mb-2">
-                    No applications yet
-                  </h3>
-                  <p className="text-muted-foreground mb-4">
-                    Start applying to jobs to see them here
-                  </p>
-                  <Button asChild variant="hero">
-                    <a href="/jobs">Browse Jobs</a>
-                  </Button>
-                </CardContent>
-              </Card>
-            ) : (
-              <div className="grid gap-4">
-                {applications.map((application) => (
-                  <Card key={application.id} className="hover:shadow-md transition-shadow">
-                    <CardHeader className="pb-3">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-3">
-                          {application.jobs.companies.logo_url ? (
-                            <img
-                              src={application.jobs.companies.logo_url}
-                              alt={`${application.jobs.companies.name} logo`}
-                              className="w-10 h-10 rounded-lg object-cover"
-                            />
-                          ) : (
-                            <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                              <Briefcase className="h-5 w-5 text-primary" />
-                            </div>
-                          )}
-                          <div>
-                            <CardTitle className="text-lg">{application.jobs.title}</CardTitle>
-                            <CardDescription>{application.jobs.companies.name}</CardDescription>
-                          </div>
-                        </div>
-                        <Badge variant={getStatusColor(application.status)} className="flex items-center space-x-1">
-                          {getStatusIcon(application.status)}
-                          <span className="capitalize">{application.status}</span>
-                        </Badge>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="flex items-center justify-between text-sm text-muted-foreground">
-                        <span>{application.jobs.location}</span>
-                        <span>Applied on {formatDate(application.applied_at)}</span>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            )}
+            <ApplicationTracker userId={user?.id || ""} />
+          </TabsContent>
+
+          <TabsContent value="recommendations" className="space-y-6">
+            <JobRecommendations userId={user?.id || ""} profile={profile} />
+          </TabsContent>
+
+          <TabsContent value="saved" className="space-y-6">
+            <SavedJobs userId={user?.id || ""} />
           </TabsContent>
 
           <TabsContent value="profile" className="space-y-6">
-            <Card>
+            <ProfileForm 
+              userId={user?.id || ""} 
+              onProfileUpdate={(updatedProfile) => setProfile(updatedProfile)}
+            />
+            {/* <Card>
               <CardHeader>
                 <CardTitle>Profile Information</CardTitle>
                 <CardDescription>
@@ -275,7 +240,7 @@ export default function Dashboard() {
                   Edit Profile
                 </Button>
               </CardContent>
-            </Card>
+            </Card> */}
           </TabsContent>
 
           <TabsContent value="companies" className="space-y-6">

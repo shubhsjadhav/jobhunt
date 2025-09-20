@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { JobSaveButton } from "@/components/JobSaveButton";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { 
@@ -243,7 +244,7 @@ export default function JobDetail() {
                   </div>
                   <div className="flex items-center space-x-2">
                     <Button variant="ghost" size="sm">
-                      <Heart className="h-4 w-4" />
+                      <JobSaveButton jobId={job.id} />
                     </Button>
                     <Button variant="ghost" size="sm">
                       <Share2 className="h-4 w-4" />
