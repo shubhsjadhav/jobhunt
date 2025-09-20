@@ -165,6 +165,8 @@ export default function JobDetail() {
     if (min && max) return `$${(min / 1000).toFixed(0)}k - $${(max / 1000).toFixed(0)}k`;
     if (min) return `$${(min / 1000).toFixed(0)}k+`;
     return `Up to $${(max! / 1000).toFixed(0)}k`;
+    )
+  }
   };
 
   const getTimeAgo = (dateString: string) => {
@@ -175,8 +177,8 @@ export default function JobDetail() {
     if (diffInDays === 0) return "Today";
     if (diffInDays === 1) return "Yesterday";
     if (diffInDays < 7) return `${diffInDays} days ago`;
-    if (diffInDays < 30) return `${Math.floor(diffInDays / 7)} weeks ago`;
-    return `${Math.floor(diffInDays / 30)} months ago`;
+    if (diffInDays < 30) return \`${Math.floor(diffInDays / 7)} weeks ago`;
+    return \`${Math.floor(diffInDays / 30)} months ago`;
   };
 
   if (loading) {
@@ -229,7 +231,7 @@ export default function JobDetail() {
                     {job.companies.logo_url ? (
                       <img
                         src={job.companies.logo_url}
-                        alt={`${job.companies.name} logo`}
+                        alt={\`${job.companies.name} logo`}
                         className="w-16 h-16 rounded-lg object-cover"
                       />
                     ) : (
@@ -457,4 +459,5 @@ export default function JobDetail() {
       </main>
     </div>
   );
+}
 }
