@@ -33,6 +33,8 @@ export const JobCard = ({ job }: JobCardProps) => {
     if (min && max) return `$${(min / 1000).toFixed(0)}k - $${(max / 1000).toFixed(0)}k`;
     if (min) return `$${(min / 1000).toFixed(0)}k+`;
     return `Up to $${(max! / 1000).toFixed(0)}k`;
+    )
+  }
   };
 
   const getTimeAgo = (dateString: string) => {
@@ -43,8 +45,8 @@ export const JobCard = ({ job }: JobCardProps) => {
     if (diffInDays === 0) return "Today";
     if (diffInDays === 1) return "Yesterday";
     if (diffInDays < 7) return `${diffInDays} days ago`;
-    if (diffInDays < 30) return `${Math.floor(diffInDays / 7)} weeks ago`;
-    return `${Math.floor(diffInDays / 30)} months ago`;
+    if (diffInDays < 30) return \`${Math.floor(diffInDays / 7)} weeks ago`;
+    return \`${Math.floor(diffInDays / 30)} months ago`;
   };
 
   return (
@@ -57,7 +59,7 @@ export const JobCard = ({ job }: JobCardProps) => {
                 <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-secondary/20 rounded-xl blur-sm group-hover:blur-md transition-all duration-300"></div>
                 <img
                   src={job.company.logo_url}
-                  alt={`${job.company.name} logo`}
+                  alt={\`${job.company.name} logo`}
                   className="relative w-14 h-14 rounded-xl object-cover group-hover:scale-105 transition-transform duration-300"
                 />
               </div>
@@ -139,3 +141,4 @@ export const JobCard = ({ job }: JobCardProps) => {
     </Card>
   );
 };
+}
