@@ -218,6 +218,16 @@ export default function Auth() {
                 <TabsTrigger value="signup">Sign Up</TabsTrigger>
               </TabsList>
               
+              {/* Admin Login Link */}
+              <div className="text-center mt-4 mb-4">
+                <Link 
+                  to="/admin/auth" 
+                  className="text-sm text-primary hover:text-primary/80 transition-colors font-medium"
+                >
+                  Login as Admin →
+                </Link>
+              </div>
+              
               <TabsContent value="signin">
                 <form onSubmit={handleSignIn} className="space-y-4">
                   <div className="space-y-2">
