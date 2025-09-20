@@ -36,6 +36,8 @@ export const JobCard = ({ job }: JobCardProps) => {
     return `Up to $${(max! / 1000).toFixed(0)}k`;
     )
   }
+    )
+  }
   };
 
   const getTimeAgo = (dateString: string) => {
@@ -140,7 +142,8 @@ export const JobCard = ({ job }: JobCardProps) => {
           </Button>
         </div>
       </CardFooter>
-    </Card>
+    </
+}Card>
   );
 };
 }
