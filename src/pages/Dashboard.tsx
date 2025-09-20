@@ -3,8 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { Header } from "@/components/Header";
 import { ProfileForm } from "@/components/ProfileForm";
 import { ApplicationTracker } from "@/components/ApplicationTracker";
+import { ApplicationTracker } from "@/components/ApplicationTracker";
 import { JobRecommendations } from "@/components/JobRecommendations";
-import { SavedJobs } from "@/components/SavedJobs";
 import { SavedJobs } from "@/components/SavedJobs";
 import { CompanyManagement } from "@/components/CompanyManagement";
 import { useAuth } from "@/hooks/useAuth";
@@ -170,7 +170,6 @@ export default function Dashboard() {
             <TabsTrigger value="applications">Applications</TabsTrigger>
             <TabsTrigger value="recommendations">Recommendations</TabsTrigger>
             <TabsTrigger value="saved">Saved Jobs</TabsTrigger>
-            <TabsTrigger value="saved">Saved Jobs</TabsTrigger>
             <TabsTrigger value="profile">Profile</TabsTrigger>
             <TabsTrigger value="companies">Companies</TabsTrigger>
           </TabsList>
@@ -180,11 +179,7 @@ export default function Dashboard() {
           </TabsContent>
 
           <TabsContent value="recommendations" className="space-y-6">
-            <JobRecommendations userId={user?.id || ""} profile={profile} />
-          </TabsContent>
-
-          <TabsContent value="saved" className="space-y-6">
-            <SavedJobs userId={user?.id || ""} />
+            <JobRecommendations userId={user?.id || ""} />
           </TabsContent>
 
           <TabsContent value="saved" className="space-y-6">
@@ -192,47 +187,44 @@ export default function Dashboard() {
           </TabsContent>
 
           <TabsContent value="profile" className="space-y-6">
-            <ProfileForm 
-              userId={user?.id || ""} 
-              onProfileUpdate={(updatedProfile) => setProfile(updatedProfile)}
-            />
+            <ProfileForm userId={user?.id || ""} />
             {/* <Card>
               <CardHeader>
-                <CardTitle>Profile Information</CardTitle>
+                <CardTitle className="flex items-center gap-2">
+                  <User className="h-5 w-5" />
+                  Profile Overview
+                </CardTitle>
                 <CardDescription>
-                  Your profile helps employers find you
+                  Your current profile information
                 </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid md:grid-cols-2 gap-4">
+              <CardContent>
+                <div className="space-y-4">
                   <div>
-                    <label className="text-sm font-medium text-foreground">Full Name</label>
-                    <p className="text-muted-foreground">{profile?.full_name || "Not set"}</p>
+                    <h3 className="font-semibold">{profile?.full_name || "No name set"}</h3>
+                    <p className="text-muted-foreground">{profile?.email}</p>
                   </div>
+                  
+                  {profile?.location && (
+                    <div>
+                      <p className="text-sm font-medium">Location</p>
+                      <p className="text-muted-foreground">{profile.location}</p>
+                    </div>
+                  )}
+                  
+                  {profile?.experience_level && (
+                    <div>
+                      <p className="text-sm font-medium">Experience Level</p>
+                      <Badge variant="secondary">{profile.experience_level}</Badge>
+                    </div>
+                  )}
+                  
                   <div>
-                    <label className="text-sm font-medium text-foreground">Email</label>
-                    <p className="text-muted-foreground">{profile?.email || "Not set"}</p>
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium text-foreground">Phone</label>
-                    <p className="text-muted-foreground">{profile?.phone || "Not set"}</p>
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium text-foreground">Location</label>
-                    <p className="text-muted-foreground">{profile?.location || "Not set"}</p>
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium text-foreground">Experience Level</label>
-                    <p className="text-muted-foreground capitalize">
-                      {profile?.experience_level?.replace('-', ' ') || "Not set"}
-                    </p>
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium text-foreground">Skills</label>
-                    <div className="flex flex-wrap gap-1 mt-1">
+                    <p className="text-sm font-medium mb-2">Skills</p>
+                    <div className="flex flex-wrap gap-2">
                       {profile?.skills && profile.skills.length > 0 ? (
-                        profile.skills.map((skill) => (
-                          <Badge key={skill} variant="outline" className="text-xs">
+                        profile.skills.map((skill, index) => (
+                          <Badge key={index} variant="outline">
                             {skill}
                           </Badge>
                         ))
