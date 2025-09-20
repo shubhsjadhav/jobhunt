@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { JobSaveButton } from "@/components/JobSaveButton";
+import { JobSaveButton } from "@/components/JobSaveButton";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { MapPin, Clock, DollarSign, Users, ExternalLink } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -123,6 +124,7 @@ export const JobCard = ({ job }: JobCardProps) => {
           <span>{getTimeAgo(job.created_at)}</span>
         </div>
         <div className="flex space-x-3">
+          <JobSaveButton jobId={job.id} />
           <JobSaveButton jobId={job.id} />
           <Button variant="outline" size="sm" asChild className="hover:bg-accent/50">
             <Link to={`/jobs/${job.id}`}>

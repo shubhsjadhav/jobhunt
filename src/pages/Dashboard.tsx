@@ -5,6 +5,7 @@ import { ProfileForm } from "@/components/ProfileForm";
 import { ApplicationTracker } from "@/components/ApplicationTracker";
 import { JobRecommendations } from "@/components/JobRecommendations";
 import { SavedJobs } from "@/components/SavedJobs";
+import { SavedJobs } from "@/components/SavedJobs";
 import { CompanyManagement } from "@/components/CompanyManagement";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
@@ -169,6 +170,7 @@ export default function Dashboard() {
             <TabsTrigger value="applications">Applications</TabsTrigger>
             <TabsTrigger value="recommendations">Recommendations</TabsTrigger>
             <TabsTrigger value="saved">Saved Jobs</TabsTrigger>
+            <TabsTrigger value="saved">Saved Jobs</TabsTrigger>
             <TabsTrigger value="profile">Profile</TabsTrigger>
             <TabsTrigger value="companies">Companies</TabsTrigger>
           </TabsList>
@@ -179,6 +181,10 @@ export default function Dashboard() {
 
           <TabsContent value="recommendations" className="space-y-6">
             <JobRecommendations userId={user?.id || ""} profile={profile} />
+          </TabsContent>
+
+          <TabsContent value="saved" className="space-y-6">
+            <SavedJobs userId={user?.id || ""} />
           </TabsContent>
 
           <TabsContent value="saved" className="space-y-6">
