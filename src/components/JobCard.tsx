@@ -32,6 +32,8 @@ export const JobCard = ({ job }: JobCardProps) => {
     if (min && max) return `$${(min / 1000).toFixed(0)}k - $${(max / 1000).toFixed(0)}k`;
     if (min) return `$${(min / 1000).toFixed(0)}k+`;
     return `Up to $${(max! / 1000).toFixed(0)}k`;
+    )
+  }
   };
 
   const getTimeAgo = (dateString: string) => {
@@ -42,8 +44,8 @@ export const JobCard = ({ job }: JobCardProps) => {
     if (diffInDays === 0) return "Today";
     if (diffInDays === 1) return "Yesterday";
     if (diffInDays < 7) return `${diffInDays} days ago`;
-    if (diffInDays < 30) return `${Math.floor(diffInDays / 7)} weeks ago`;
-    return `${Math.floor(diffInDays / 30)} months ago`;
+    if (diffInDays < 30) return \`${Math.floor(diffInDays / 7)} weeks ago`;
+    return \`${Math.floor(diffInDays / 30)} months ago`;
   };
 
   const getExperienceColor = (level: string) => {
@@ -69,7 +71,7 @@ export const JobCard = ({ job }: JobCardProps) => {
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-100 to-purple-100 rounded-xl blur-sm group-hover:blur-md transition-all duration-300"></div>
                 <img
                   src={job.company.logo_url}
-                  alt={`${job.company.name} logo`}
+                  alt={\`${job.company.name} logo`}
                   className="relative w-14 h-14 rounded-xl object-cover group-hover:scale-105 transition-transform duration-300 shadow-sm"
                 />
               </div>
@@ -85,7 +87,7 @@ export const JobCard = ({ job }: JobCardProps) => {
               <p className="text-gray-600 font-medium">{job.company.name}</p>
             </div>
           </div>
-          <Badge className={`${job.is_remote ? 'bg-green-50 text-green-700 border-green-200' : 'bg-gray-50 text-gray-700 border-gray-200'} group-hover:scale-105 transition-transform duration-200`}>
+          <Badge className={\`${job.is_remote ? 'bg-green-50 text-green-700 border-green-200' : 'bg-gray-50 text-gray-700 border-gray-200'} group-hover:scale-105 transition-transform duration-200`}>
             {job.is_remote ? "Remote" : "On-site"}
           </Badge>
         </div>
@@ -115,7 +117,7 @@ export const JobCard = ({ job }: JobCardProps) => {
             <div className="w-8 h-8 bg-orange-50 rounded-lg flex items-center justify-center">
               <Users className="h-4 w-4 text-orange-600" />
             </div>
-            <Badge className={`text-xs ${getExperienceColor(job.experience_level)} font-medium`}>
+            <Badge className={\`text-xs ${getExperienceColor(job.experience_level)} font-medium`}>
               {job.experience_level.replace('-', ' ')}
             </Badge>
           </div>
@@ -158,3 +160,4 @@ export const JobCard = ({ job }: JobCardProps) => {
     </Card>
   );
 };
+}
