@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Search, MapPin, User, LogOut, Briefcase, Building2, Menu, X } from "lucide-react";
+import { Search, MapPin, User, LogOut, Briefcase, Building2, Menu, X, Bell, Settings } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -35,8 +35,10 @@ export const Header = ({ user }: HeaderProps) => {
 
   const navItems = [
     { href: "/", label: "Home", icon: Briefcase },
-    { href: "/apply", label: "Apply for Job", icon: Search },
-    { href: "/hire", label: "Hire for Job", icon: Building2 },
+    { href: "/jobs", label: "Find Jobs", icon: Search },
+    { href: "/companies", label: "Companies", icon: Building2 },
+    { href: "/apply", label: "Job Search", icon: Search },
+    { href: "/hire", label: "Post Jobs", icon: Building2 },
     { href: "/contact", label: "Contact", icon: User },
   ];
 
@@ -45,19 +47,19 @@ export const Header = ({ user }: HeaderProps) => {
   }
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/50 bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60">
+    <header className="sticky top-0 z-50 w-full nav-professional">
       <div className="container flex h-16 items-center justify-between">
         {/* Logo */}
         <Link to="/" className="flex items-center space-x-3 group">
           <div className="relative">
             <div className="absolute inset-0 bg-gradient-to-r from-primary to-secondary rounded-xl blur-sm opacity-75 group-hover:opacity-100 transition-opacity duration-300"></div>
-            <div className="relative bg-gradient-to-r from-primary to-secondary p-2.5 rounded-xl">
-              <Briefcase className="h-6 w-6 text-primary-foreground" />
+            <div className="relative bg-gradient-to-r from-primary to-secondary p-2.5 rounded-xl shadow-md">
+              <Briefcase className="h-6 w-6 text-white" />
             </div>
           </div>
           <div className="flex flex-col">
             <span className="font-heading font-bold text-xl text-gradient-hero">JobHunt</span>
-            <span className="text-xs text-muted-foreground -mt-1">Connect</span>
+            <span className="text-xs text-gray-500 -mt-1">Professional</span>
           </div>
         </Link>
         
@@ -69,10 +71,10 @@ export const Header = ({ user }: HeaderProps) => {
               <Link
                 key={item.href}
                 to={item.href}
-                className="flex items-center space-x-2 px-4 py-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-all duration-200 group"
+                className="flex items-center space-x-2 px-4 py-2 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-all duration-200 group font-medium"
               >
                 <Icon className="h-4 w-4 group-hover:scale-110 transition-transform duration-200" />
-                <span className="font-medium">{item.label}</span>
+                <span>{item.label}</span>
               </Link>
             );
           })}
@@ -82,23 +84,26 @@ export const Header = ({ user }: HeaderProps) => {
         <div className="hidden md:flex items-center space-x-3">
           {user ? (
             <div className="flex items-center space-x-3">
-              <Button variant="ghost" size="sm" asChild className="hover:bg-accent/50">
+              <Button variant="ghost" size="sm" className="hover:bg-gray-50">
+                <Bell className="h-4 w-4" />
+              </Button>
+              <Button variant="ghost" size="sm" asChild className="hover:bg-gray-50">
                 <Link to="/dashboard" className="flex items-center space-x-2">
                   <User className="h-4 w-4" />
                   <span>Profile</span>
                 </Link>
               </Button>
-              <Button variant="outline" size="sm" onClick={handleSignOut} className="hover:bg-destructive hover:text-destructive-foreground">
+              <Button variant="outline" size="sm" onClick={handleSignOut} className="hover:bg-red-50 hover:text-red-600 hover:border-red-200">
                 <LogOut className="h-4 w-4 mr-2" />
                 Sign Out
               </Button>
             </div>
           ) : (
             <div className="flex items-center space-x-3">
-              <Button variant="ghost" size="sm" asChild className="hover:bg-accent/50">
+              <Button variant="ghost" size="sm" asChild className="hover:bg-gray-50">
                 <Link to="/auth">Sign In</Link>
               </Button>
-              <Button size="sm" asChild className="btn-hero">
+              <Button size="sm" asChild className="btn-hero shadow-md">
                 <Link to="/auth">Get Started</Link>
               </Button>
             </div>
@@ -109,7 +114,7 @@ export const Header = ({ user }: HeaderProps) => {
         <Button
           variant="ghost"
           size="sm"
-          className="md:hidden"
+          className="md:hidden hover:bg-gray-50"
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
         >
           {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -118,7 +123,7 @@ export const Header = ({ user }: HeaderProps) => {
 
       {/* Mobile Navigation */}
       {isMobileMenuOpen && (
-        <div className="md:hidden border-t border-border/50 bg-background/95 backdrop-blur-xl">
+        <div className="md:hidden border-t border-gray-200/50 bg-white/95 backdrop-blur-xl">
           <div className="container py-4 space-y-2">
             {navItems.map((item) => {
               const Icon = item.icon;
@@ -126,32 +131,32 @@ export const Header = ({ user }: HeaderProps) => {
                 <Link
                   key={item.href}
                   to={item.href}
-                  className="flex items-center space-x-3 px-4 py-3 rounded-lg text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-all duration-200"
+                  className="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-all duration-200 font-medium"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   <Icon className="h-5 w-5" />
-                  <span className="font-medium">{item.label}</span>
+                  <span>{item.label}</span>
                 </Link>
               );
             })}
             
-            <div className="pt-4 border-t border-border/50 space-y-2">
+            <div className="pt-4 border-t border-gray-200/50 space-y-2">
               {user ? (
                 <>
-                  <Button variant="ghost" size="sm" asChild className="w-full justify-start">
+                  <Button variant="ghost" size="sm" asChild className="w-full justify-start hover:bg-gray-50">
                     <Link to="/dashboard" className="flex items-center space-x-3" onClick={() => setIsMobileMenuOpen(false)}>
                       <User className="h-4 w-4" />
                       <span>Profile</span>
                     </Link>
                   </Button>
-                  <Button variant="outline" size="sm" onClick={handleSignOut} className="w-full">
+                  <Button variant="outline" size="sm" onClick={handleSignOut} className="w-full hover:bg-red-50 hover:text-red-600">
                     <LogOut className="h-4 w-4 mr-2" />
                     Sign Out
                   </Button>
                 </>
               ) : (
                 <>
-                  <Button variant="ghost" size="sm" asChild className="w-full">
+                  <Button variant="ghost" size="sm" asChild className="w-full hover:bg-gray-50">
                     <Link to="/auth" onClick={() => setIsMobileMenuOpen(false)}>Sign In</Link>
                   </Button>
                   <Button size="sm" asChild className="w-full btn-hero">

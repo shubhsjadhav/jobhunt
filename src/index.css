@@ -3,10 +3,10 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Modern Design System - Job Hunt Portal */
+/* Professional Design System - Job Hunt Portal */
 @layer base {
   :root {
-    /* Modern Color Palette */
+    /* Professional Color Palette */
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
 
@@ -16,12 +16,12 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    /* Modern Blue Primary */
+    /* Professional Blue Primary */
     --primary: 221.2 83.2% 53.3%;
     --primary-foreground: 210 40% 98%;
     --primary-hover: 221.2 83.2% 48%;
 
-    /* Modern Purple Secondary */
+    /* Professional Purple Secondary */
     --secondary: 262.1 83.3% 57.8%;
     --secondary-foreground: 210 40% 98%;
 
@@ -40,14 +40,14 @@
 
     --radius: 0.75rem;
 
-    /* Modern Gradients */
+    /* Professional Gradients */
     --gradient-primary: linear-gradient(135deg, hsl(221.2 83.2% 53.3%), hsl(262.1 83.3% 57.8%));
     --gradient-secondary: linear-gradient(135deg, hsl(262.1 83.3% 57.8%), hsl(280.7 100% 70%));
     --gradient-success: linear-gradient(135deg, hsl(142.1 76.2% 36.3%), hsl(160.3 84.2% 39.4%));
     --gradient-card: linear-gradient(145deg, hsl(0 0% 100%), hsl(210 40% 98%));
     --gradient-hero: linear-gradient(135deg, hsl(221.2 83.2% 53.3%) 0%, hsl(262.1 83.3% 57.8%) 50%, hsl(280.7 100% 70%) 100%);
     
-    /* Modern Shadows */
+    /* Professional Shadows */
     --shadow-xs: 0 1px 2px 0 hsl(0 0% 0% / 0.05);
     --shadow-sm: 0 1px 3px 0 hsl(0 0% 0% / 0.1), 0 1px 2px -1px hsl(0 0% 0% / 0.1);
     --shadow-md: 0 4px 6px -1px hsl(0 0% 0% / 0.1), 0 2px 4px -2px hsl(0 0% 0% / 0.1);
@@ -56,7 +56,7 @@
     --shadow-2xl: 0 25px 50px -12px hsl(0 0% 0% / 0.25);
     --shadow-glow: 0 0 20px hsl(221.2 83.2% 53.3% / 0.3);
 
-    /* Modern Transitions */
+    /* Professional Transitions */
     --transition-fast: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
     --transition-normal: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     --transition-slow: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
@@ -124,6 +124,8 @@
 
   body {
     @apply bg-background text-foreground font-body antialiased;
+    background: linear-gradient(135deg, hsl(210 40% 98%) 0%, hsl(220 13% 95%) 100%);
+    min-height: 100vh;
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -132,38 +134,52 @@
 }
 
 @layer components {
-  /* Modern Button Variants */
+  /* Professional Button Variants */
   .btn-hero {
-    @apply bg-gradient-to-r from-primary to-secondary text-primary-foreground shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105;
+    @apply bg-gradient-to-r from-primary to-secondary text-primary-foreground shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 border-0;
+    background: linear-gradient(135deg, hsl(221.2 83.2% 53.3%), hsl(262.1 83.3% 57.8%));
   }
 
   .btn-gradient {
-    @apply bg-gradient-to-r from-primary to-secondary text-primary-foreground;
+    @apply bg-gradient-to-r from-primary to-secondary text-primary-foreground shadow-md hover:shadow-lg transition-all duration-300;
   }
 
   .btn-glass {
-    @apply bg-white/10 backdrop-blur-md border border-white/20 text-foreground;
+    @apply bg-white/10 backdrop-blur-md border border-white/20 text-foreground hover:bg-white/20 transition-all duration-300;
   }
 
-  /* Modern Card Styles */
+  .btn-professional {
+    @apply bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 hover:border-gray-300 shadow-sm hover:shadow-md transition-all duration-200 font-medium;
+  }
+
+  /* Professional Card Styles */
   .card-modern {
-    @apply bg-card border border-border/50 shadow-sm hover:shadow-md transition-all duration-300 rounded-xl backdrop-blur-sm;
+    @apply bg-white/80 backdrop-blur-sm border border-gray-200/50 shadow-sm hover:shadow-lg transition-all duration-300 rounded-xl;
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.7));
   }
 
   .card-gradient {
-    @apply bg-gradient-to-br from-card to-card/50 border border-border/50 shadow-sm hover:shadow-lg transition-all duration-300 rounded-xl;
+    @apply bg-gradient-to-br from-white to-gray-50/50 border border-gray-200/50 shadow-sm hover:shadow-lg transition-all duration-300 rounded-xl;
   }
 
   .card-glass {
-    @apply bg-white/80 backdrop-blur-md border border-white/20 shadow-lg hover:shadow-xl transition-all duration-300 rounded-xl;
+    @apply bg-white/90 backdrop-blur-md border border-white/30 shadow-lg hover:shadow-xl transition-all duration-300 rounded-xl;
   }
 
-  /* Modern Input Styles */
+  .card-professional {
+    @apply bg-white border border-gray-200 shadow-sm hover:shadow-md transition-all duration-200 rounded-lg;
+  }
+
+  /* Professional Input Styles */
   .input-modern {
-    @apply bg-background/50 border border-border/50 focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all duration-200 rounded-lg;
+    @apply bg-white/80 border border-gray-200 focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all duration-200 rounded-lg shadow-sm;
   }
 
-  /* Modern Animations */
+  .input-professional {
+    @apply bg-white border border-gray-300 focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all duration-200 rounded-md;
+  }
+
+  /* Professional Animations */
   .animate-fade-in {
     animation: fadeIn 0.5s ease-out;
   }
@@ -188,7 +204,7 @@
     animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   }
 
-  /* Hover Effects */
+  /* Professional Hover Effects */
   .hover-lift {
     @apply hover:-translate-y-1 hover:shadow-lg transition-all duration-300;
   }
@@ -201,7 +217,11 @@
     @apply hover:scale-105 transition-transform duration-200;
   }
 
-  /* Gradient Text */
+  .hover-professional {
+    @apply hover:shadow-md hover:-translate-y-0.5 transition-all duration-200;
+  }
+
+  /* Professional Gradient Text */
   .text-gradient {
     @apply bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent;
   }
@@ -210,26 +230,52 @@
     @apply bg-gradient-to-r from-primary via-secondary to-purple-500 bg-clip-text text-transparent;
   }
 
-  /* Modern Shadows */
-  .shadow-modern {
-    box-shadow: 0 4px 6px -1px hsl(0 0% 0% / 0.1), 0 2px 4px -2px hsl(0 0% 0% / 0.1);
+  .text-professional {
+    @apply text-gray-700;
   }
 
-  .shadow-modern-lg {
-    box-shadow: 0 10px 15px -3px hsl(0 0% 0% / 0.1), 0 4px 6px -4px hsl(0 0% 0% / 0.1);
+  /* Professional Shadows */
+  .shadow-professional {
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
   }
 
-  .shadow-modern-xl {
-    box-shadow: 0 20px 25px -5px hsl(0 0% 0% / 0.1), 0 8px 10px -6px hsl(0 0% 0% / 0.1);
+  .shadow-professional-lg {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
   }
 
-  /* Glass Morphism */
-  .glass {
-    @apply bg-white/10 backdrop-blur-md border border-white/20;
+  .shadow-professional-xl {
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
   }
 
-  .glass-strong {
-    @apply bg-white/20 backdrop-blur-lg border border-white/30;
+  /* Professional Glass Morphism */
+  .glass-professional {
+    @apply bg-white/80 backdrop-blur-md border border-white/30;
+  }
+
+  .glass-strong-professional {
+    @apply bg-white/90 backdrop-blur-lg border border-white/40;
+  }
+
+  /* Professional Navigation */
+  .nav-professional {
+    @apply bg-white/95 backdrop-blur-md border-b border-gray-200/50 shadow-sm;
+  }
+
+  /* Professional Status Indicators */
+  .status-success {
+    @apply bg-green-50 text-green-700 border border-green-200;
+  }
+
+  .status-warning {
+    @apply bg-yellow-50 text-yellow-700 border border-yellow-200;
+  }
+
+  .status-error {
+    @apply bg-red-50 text-red-700 border border-red-200;
+  }
+
+  .status-info {
+    @apply bg-blue-50 text-blue-700 border border-blue-200;
   }
 }
 
@@ -283,24 +329,47 @@
   50% { transform: translateY(-10px); }
 }
 
-/* Custom Scrollbar */
+/* Professional Scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  @apply bg-muted;
+  @apply bg-gray-100;
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-muted-foreground/30 rounded-full;
+  @apply bg-gray-300 rounded-full;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  @apply bg-muted-foreground/50;
+  @apply bg-gray-400;
 }
 
-/* Selection */
+/* Professional Selection */
 ::selection {
   @apply bg-primary/20 text-primary;
+}
+
+/* Professional Focus Styles */
+.focus-professional:focus {
+  @apply outline-none ring-2 ring-primary/20 border-primary;
+}
+
+/* Professional Loading States */
+.loading-professional {
+  @apply animate-pulse bg-gray-200 rounded;
+}
+
+/* Professional Typography */
+.text-heading-professional {
+  @apply text-gray-900 font-semibold tracking-tight;
+}
+
+.text-body-professional {
+  @apply text-gray-600 leading-relaxed;
+}
+
+.text-caption-professional {
+  @apply text-gray-500 text-sm;
 }
